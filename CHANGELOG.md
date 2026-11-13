@@ -3,6 +3,7 @@
 ## [2026-11-13]
 
 ### Added
+- 90-second narrated tour video, linked from the demo and the README, so owners see the daily habit and how to customize before they install.
 - Online demo with a guided tour, so members can try it before installing anything.
 - First version, built by Drey Thomas for 1BB members ahead of the CRM build session.
 - Today screen with a daily reach-out goal and streak, because members asked for a simple daily list.

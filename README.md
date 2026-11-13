@@ -14,6 +14,10 @@ The people in the pictures are made up.
 
 **[Open the live demo](https://1-button-business.github.io/crm-hit-list/)** and take the guided tour. It runs in your browser with made-up people, on a phone or a computer. Nothing to install.
 
+[![Watch the 90-second tour](docs/screenshots/tour-poster.jpg)](https://1-button-business.github.io/crm-hit-list/tour.mp4)
+
+**[Watch the 90-second tour](https://1-button-business.github.io/crm-hit-list/tour.mp4)**: why it helps, how to get the most from it, and how to change it by asking Claude.
+
 Other flavors: [Client Roster](https://1-button-business.github.io/crm-client-roster/), [Hit List](https://1-button-business.github.io/crm-hit-list/), [Gift Book](https://1-button-business.github.io/crm-gift-book/).
 
 ## What it does on day one

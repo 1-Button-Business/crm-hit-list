@@ -56,7 +56,8 @@ export function DemoBanner() {
   return (
     <p className="max-w-none rounded-2xl border border-line bg-raised px-4 py-3 text-sm">
       <span className="font-semibold">You are looking at a demo.</span> The people are made up and anything you change stays in this browser.{" "}
-      <a className="font-semibold underline" href={REPO} target="_blank" rel="noreferrer">Get your own copy</a>
+      <a className="font-semibold underline" href="tour.mp4" target="_blank" rel="noreferrer">Watch the 90-second video</a>{" "}or{" "}
+      <a className="font-semibold underline" href={REPO} target="_blank" rel="noreferrer">get your own copy</a>.
     </p>
   );
 }
