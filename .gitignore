@@ -1,0 +1,7 @@
+node_modules
+dist
+# Your client list lives in data/. It never goes to GitHub.
+data/*
+!data/.gitkeep
+.env*
+.DS_Store

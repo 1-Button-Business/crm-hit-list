@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "my-crm": {
+      "command": "node",
+      "args": ["mcp/server.ts"]
+    }
+  }
+}

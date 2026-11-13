@@ -1,0 +1,32 @@
+{
+  "name": "crm-hit-list",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A simple CRM that runs on your own computer. Drey's gift to 1BB members.",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "start": "node server/main.ts",
+    "test": "node --test shared/*.test.ts server/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "vite build",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@tailwindcss/vite": "4.3.3",
+    "@vitejs/plugin-react": "6.1.2",
+    "lucide-react": "1.62.0",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
+    "tailwindcss": "4.3.3",
+    "vite": "8.3.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "typescript": "6.0.3"
+  }
+}

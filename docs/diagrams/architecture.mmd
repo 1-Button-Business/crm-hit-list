@@ -1,0 +1,10 @@
+flowchart LR
+  You([You]) --> Screen[CRM screen in your browser]
+  You --> Claude[Claude]
+  Screen --> Server[Small server on your computer]
+  Claude --> Plug[Claude plug-in: 6 CRM tools]
+  Server --> Data[(data/crm.json: your client list)]
+  Plug --> Data
+  Data --> Backups[(Daily backups, 30 kept)]
+  Claude -. edits when you ask for a feature .-> Code[The CRM's own code]
+  Screen -. Text, Email, Call buttons .-> Apps[Your phone and email apps]

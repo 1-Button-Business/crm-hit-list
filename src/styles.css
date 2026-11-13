@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* Sizes follow one ladder (16, 20, 24, 32, 40, 48) and one spacing scale
+   (4, 8, 12, 16, 24, 32, 48, 64, 96) so every screen feels like the same app. */
+@theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --text-5xl: 3rem;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-soft: var(--soft);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+}
+
+/* ── Themes. Pick one in Settings, or ask Claude to "add a theme in my brand colors". ── */
+:root, [data-theme="daylight"] {
+  color-scheme: light;
+  --bg: #f3f5f8; --surface: #ffffff; --raised: #ebeff4; --line: #cfd6de;
+  --ink: #111827; --soft: #4b5563; --accent: #1d4ed8; --on-accent: #ffffff;
+  --good: #166534; --warn: #9a3412;
+}
+[data-theme="harbor"] {
+  color-scheme: light;
+  --bg: #edf3f4; --surface: #ffffff; --raised: #e1ecee; --line: #c3d3d6;
+  --ink: #0f2a30; --soft: #43595e; --accent: #0f6b64; --on-accent: #ffffff;
+  --good: #166534; --warn: #9a3412;
+}
+[data-theme="rose"] {
+  color-scheme: light;
+  --bg: #f7f3f4; --surface: #ffffff; --raised: #f1e7ea; --line: #dfcdd2;
+  --ink: #2a1218; --soft: #644850; --accent: #b0123a; --on-accent: #ffffff;
+  --good: #166534; --warn: #9a3412;
+}
+[data-theme="midnight"] {
+  color-scheme: dark;
+  --bg: #0b1220; --surface: #131c2e; --raised: #1c2842; --line: #33435f;
+  --ink: #f1f5f9; --soft: #aebacb; --accent: #5eead4; --on-accent: #042f2e;
+  --good: #4ade80; --warn: #fbbf24;
+}
+[data-theme="forest"] {
+  color-scheme: dark;
+  --bg: #0c1411; --surface: #14201b; --raised: #1d2e27; --line: #35503f;
+  --ink: #ecf4ef; --soft: #aabfb3; --accent: #86efac; --on-accent: #052e16;
+  --good: #86efac; --warn: #fbbf24;
+}
+[data-theme="ember"] {
+  color-scheme: dark;
+  --bg: #151110; --surface: #201917; --raised: #2d2420; --line: #4c3c33;
+  --ink: #f7efe9; --soft: #c6b6aa; --accent: #fb923c; --on-accent: #2a1203;
+  --good: #4ade80; --warn: #fbbf24;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0b1220; --surface: #131c2e; --raised: #1c2842; --line: #33435f;
+    --ink: #f1f5f9; --soft: #aebacb; --accent: #5eead4; --on-accent: #042f2e;
+    --good: #4ade80; --warn: #fbbf24;
+  }
+}
+
+@layer base {
+  html { background: var(--bg); color: var(--ink); font-family: var(--font-sans); }
+  body { line-height: 1.5; min-height: 100dvh; }
+  h1, h2, h3 { line-height: 1.15; font-weight: 600; }
+  p { max-width: 30em; }
+  button, a, select, summary { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+  ::placeholder { color: var(--soft); opacity: 0.8; }
+  dialog { color: var(--ink); }
+  dialog::backdrop { background: rgb(0 0 0 / 0.55); }
+}
+
+/* ── Motion: three small moves, all off when the device asks for less motion. ── */
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.rise { animation: rise 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.rise-2 { animation-delay: 0.06s; }
+.rise-3 { animation-delay: 0.12s; }
+.pop { animation: pop 0.2s ease-out both; }
+.ring-progress { transition: stroke-dashoffset 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .rise, .pop { animation: none; }
+  .ring-progress { transition: none; }
+  * { scroll-behavior: auto !important; }
+}
+
+/* Keeps the phone menu clear of the home bar. */
+.safe-bottom { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
+
+/* Dropdowns: same inner spacing as text boxes in every browser, with our own arrow. */
+.select {
+  appearance: none;
+  padding-right: 3rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a94a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+}
+.toast { display: flex; }
+.toast:not(:popover-open) { display: none; }
+@supports not selector(:popover-open) { .toast { display: flex; } }
+
+/* The one card that is the point of the app gets its own look. */
+.goal-card {
+  background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 16%, var(--surface)), var(--surface) 60%);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 30%, transparent) inset, 0 12px 32px -16px rgb(0 0 0 / 0.45);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
