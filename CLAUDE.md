@@ -79,4 +79,6 @@ The Connections screen (`src/screens/Connections.tsx`) sends owners to you with 
 - The same `ref` for the same person is saved once, so it is safe to run a sync again.
 - Save a short summary, not a full transcript. The limit is 60,000 characters.
 - Match people by email or phone first, then by full name. Ask before adding anyone new.
+- Work from the CRM outward for texts and email: take each person's phone or email and look up that one thread. Reading a whole inbox pulls in receipts, support mail and private messages.
+- Recordings often have no guest list and can be personal. Match by names in the notes, skip personal ones, and show the owner the list before saving.
 - To add a new kind of source, add it to `SOURCES` in `shared/types.ts` and add a card in `src/recipes.ts`.
