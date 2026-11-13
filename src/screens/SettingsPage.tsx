@@ -1,6 +1,8 @@
 import { config } from "../../crm.config.ts";
 import type { Settings } from "../../shared/types.ts";
+import { DEMO } from "../api.ts";
 import { useCrm } from "../crm.ts";
+import { demoExportUrl } from "../demoStore.ts";
 import { Card, Field, btnClass, useSaved } from "../ui.tsx";
 
 const THEMES: { id: string; label: string; bg: string; dot: string }[] = [
@@ -57,7 +59,7 @@ export function SettingsPage() {
       <Card title="Your data" className="rise rise-3">
         <div className="grid gap-4">
           <p className="text-soft">Everything is saved in one file on this computer: the <code>data</code> folder inside your CRM folder. A backup copy is made every day you use it, and the last 30 are kept.</p>
-          <a className={`${btnClass()} justify-self-start`} href="/api/export" download>Download my {config.peopleWord.toLowerCase()} as a spreadsheet</a>
+          <a className={`${btnClass()} justify-self-start`} href={DEMO ? demoExportUrl() : "/api/export"} download="my-crm.csv">Download my {config.peopleWord.toLowerCase()} as a spreadsheet</a>
         </div>
       </Card>
 

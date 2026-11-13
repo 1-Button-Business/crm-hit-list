@@ -3,6 +3,7 @@
 ## [2026-11-13]
 
 ### Added
+- Online demo with a guided tour, so members can try it before installing anything.
 - First version, built by Drey Thomas for 1BB members ahead of the CRM build session.
 - Today screen with a daily reach-out goal and streak, because members asked for a simple daily list.
 - "Haven't talked in a while", follow-up dates, birthdays and saved dates, so nobody goes quiet by accident.

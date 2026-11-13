@@ -4,7 +4,8 @@ import { CalendarHeart, Columns3, Handshake, Home, Menu, Plus, Settings as Cog, 
 import { config } from "../crm.config.ts";
 import { dayOf } from "../shared/logic.ts";
 import type { Person } from "../shared/types.ts";
-import { useDb } from "./api.ts";
+import { DEMO, useDb } from "./api.ts";
+import { DemoBanner, Tour } from "./Tour.tsx";
 import { CrmContext } from "./crm.ts";
 import type { Crm } from "./crm.ts";
 import { AddPersonDialog, ReachOutDialog } from "./dialogs.tsx";
@@ -135,6 +136,7 @@ export function App() {
         </nav>
 
         <div className="grid min-w-0 content-start gap-4">
+          {DEMO && <DemoBanner />}
           <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-soft">{db.settings.businessName || "My CRM"}</p>
@@ -149,6 +151,8 @@ export function App() {
             {screens[page] ?? <Empty title="That page does not exist"><Button onClick={() => go("/today")}>Back to Today</Button></Empty>}
           </main>
 
+          {/* Room at the bottom so the tour card never covers the last row. */}
+          {DEMO && <div aria-hidden className="h-96" />}
           <footer className="px-2 py-4 text-sm text-soft">
             Built by Drey Thomas. Drey's gift to you, from <a className="underline" href="https://1buttonbusiness.com" target="_blank" rel="noreferrer">1 Button Business</a>.
           </footer>
@@ -160,6 +164,7 @@ export function App() {
         <NavLink d={{ path: "more", label: "More", icon: Menu }} active={page === "more" || !!dest && !dest.main} compact />
       </nav>
 
+      {DEMO && <Tour />}
       <AddPersonDialog open={adding} onClose={() => setAdding(false)} />
       <ReachOutDialog person={reaching?.person ?? null} templateId={reaching?.templateId} onClose={() => setReaching(null)} />
       <Toast {...toast} />
