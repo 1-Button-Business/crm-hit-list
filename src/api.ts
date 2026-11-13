@@ -31,6 +31,8 @@ export type Actions = {
   removeTouch: (id: string) => Promise<unknown>;
   updateSettings: (s: Partial<Settings>) => Promise<Settings>;
   importPeople: (rows: Partial<Person>[]) => Promise<{ added: number; skipped: number }>;
+  /** Save conversations that came from a connection. Doubles are skipped. */
+  importTouches: (rows: Omit<Touch, "id">[]) => Promise<{ added: number; skipped: number }>;
 };
 
 export function useDb() {
@@ -63,6 +65,7 @@ export function useDb() {
     removeTouch: (id) => then(call("DELETE", `touches/${id}`, {})),
     updateSettings: (s) => then(call("PATCH", "settings", s)),
     importPeople: (rows) => then(call("POST", "import", rows)),
+    importTouches: (rows) => then(call("POST", "conversations", rows)),
   };
   return { db, error, refresh, actions };
 }

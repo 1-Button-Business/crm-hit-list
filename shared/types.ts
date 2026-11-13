@@ -41,7 +41,15 @@ export type Touch = {
   body: string;
   /** ISO timestamp. */
   at: string;
+  /** Where it came from when a connection brought it in: one of SOURCES. Empty when you typed it. */
+  source?: string;
+  /** The outside id (a calendar event, a recording). Stops the same thing being saved twice. */
+  ref?: string;
 };
+
+/** The places conversations can come in from. Add one here and it shows on the Connections screen. */
+export const SOURCES = { calendar: "Calendar", recorder: "Call recorder", texts: "Text messages", email: "Email" } as const;
+export type Source = keyof typeof SOURCES;
 
 export type Settings = {
   businessName: string;

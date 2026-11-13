@@ -16,6 +16,7 @@ const STEPS: { path: string; title: string; text: string }[] = [
   { path: "/dates", title: "Birthdays, dates and gifts", text: "Birthdays and anniversaries show up before the day arrives. Each person holds gift ideas and a mailing address, and a button opens Amazon with their gift idea already searched." },
   { path: "/referrals", title: "Who sends you business", text: "Mark who sent each person to you. This screen counts referrals and reminds you of every thank-you you still owe." },
   { path: "/import", title: "Bring your list with you", text: "Export a spreadsheet from ManyChat, a Google Form or your old CRM and drop it here. It works out the columns for you." },
+  { path: "/connections", title: "Every conversation in one place", text: "Meetings from your calendar, call recorder notes, texts and emails all land under the right person. Claude does the connecting, or you can drop in a calendar file or paste a thread yourself." },
   { path: "/grow", title: "Add anything by asking", text: "You never wait on a software company again. Want a new screen, a new stage, your brand colors? Copy a message, paste it into Claude, and Claude builds it into your CRM in minutes." },
   { path: "/settings", title: "Make it look like yours", text: "Pick a color theme, set your daily goal and decide how many days counts as quiet. Try a theme now." },
   { path: "/today", title: "Ready for your own?", text: "Your copy runs on your computer with your real people. Nobody else can see it, and there is no monthly fee. It takes about 5 minutes to set up with Claude." },

@@ -39,8 +39,10 @@ export const personInput = z.object({
 export const touchInput = z.object({
   personId: text(60).min(1),
   kind: z.enum(TOUCH_KINDS),
-  body: text(10_000),
+  body: z.string().trim().max(60_000, "That is too long to save. Ask Claude to shorten it first."),
   at: z.string().datetime({ offset: true }).optional(),
+  source: text(40).optional(),
+  ref: text(300).optional(),
   /** Set (or clear with "") the person's next follow-up in the same save. */
   followUpOn: fullDay.optional(),
 }).strict();
@@ -155,10 +157,35 @@ export class Store {
     const p = this.person(db, data.personId);
     // One save for both, so a reach-out can never be logged twice by a retry.
     if (data.followUpOn !== undefined) { p.followUpOn = data.followUpOn; p.followUpNote = ""; }
-    const t: Touch = { id: randomUUID(), personId: data.personId, kind: data.kind, body: data.body, at: data.at ?? new Date().toISOString() };
+    // A connection can run twice. The same outside thing is only ever saved once per person.
+    const twin = data.ref && db.touches.find((x) => x.ref === data.ref && x.personId === data.personId);
+    if (twin) return twin;
+    const t = this.touch(data);
     db.touches.push(t);
     this.write(db);
     return t;
+  }
+
+  private touch(data: z.infer<typeof touchInput>): Touch {
+    return { id: randomUUID(), personId: data.personId, kind: data.kind, body: data.body, at: data.at ?? new Date().toISOString(), ...(data.source ? { source: data.source } : {}), ...(data.ref ? { ref: data.ref } : {}) };
+  }
+
+  /** Save many conversations at once (a calendar, a batch from Claude). Skips doubles and unknown people. */
+  importTouches(inputs: unknown): { added: number; skipped: number } {
+    const db = this.read();
+    const rows = z.array(touchInput).max(2000).parse(inputs);
+    const seen = new Set(db.touches.filter((t) => t.ref).map((t) => `${t.personId} ${t.ref}`));
+    const known = new Set(db.people.map((p) => p.id));
+    let added = 0;
+    for (const row of rows) {
+      const key = `${row.personId} ${row.ref}`;
+      if (!known.has(row.personId) || (row.ref && seen.has(key))) continue;
+      if (row.ref) seen.add(key);
+      db.touches.push(this.touch(row));
+      added++;
+    }
+    if (added) this.write(db);
+    return { added, skipped: rows.length - added };
   }
 
   removeTouch(id: string) {

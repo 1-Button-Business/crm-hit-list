@@ -89,3 +89,14 @@ test("the API only answers to this computer", async () => {
     assert.equal(s.read().people.length, 1);
   } finally { server.close(); }
 });
+
+test("a connection can run twice without saving doubles", () => {
+  const store = fresh();
+  const p = store.addPerson({ name: "Jane Doe" });
+  const row = { personId: p.id, kind: "meeting", body: "Intro call", at: "2026-11-05T15:00:00.000Z", source: "calendar", ref: "cal:a1" };
+  assert.deepEqual(store.importTouches([row, row, { ...row, personId: "nobody" }]), { added: 1, skipped: 2 });
+  assert.deepEqual(store.importTouches([row]), { added: 0, skipped: 1 });
+  assert.equal(store.addTouch(row).id, store.read().touches[0]!.id);
+  assert.equal(store.read().touches.length, 1);
+  assert.equal(store.read().touches[0]!.source, "calendar");
+});

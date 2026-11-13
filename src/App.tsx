@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { CalendarHeart, Columns3, Handshake, Home, Menu, Plus, Settings as Cog, Sparkles, Upload, Users } from "lucide-react";
+import { Cable, CalendarHeart, Columns3, Handshake, Home, Menu, Plus, Settings as Cog, Sparkles, Upload, Users } from "lucide-react";
 import { config } from "../crm.config.ts";
 import { dayOf } from "../shared/logic.ts";
 import type { Person } from "../shared/types.ts";
@@ -18,6 +18,7 @@ import { Dates } from "./screens/Dates.tsx";
 import { Referrals } from "./screens/Referrals.tsx";
 import { ImportPage } from "./screens/ImportPage.tsx";
 import { Grow } from "./screens/Grow.tsx";
+import { Connections } from "./screens/Connections.tsx";
 import { SettingsPage } from "./screens/SettingsPage.tsx";
 
 type Dest = { path: string; label: string; icon: typeof Home; main?: boolean };
@@ -27,6 +28,7 @@ const DESTS: Dest[] = [
   { path: "pipeline", label: "Pipeline", icon: Columns3, main: true },
   { path: "dates", label: "Dates", icon: CalendarHeart, main: true },
   { path: "referrals", label: "Referrals", icon: Handshake },
+  { path: "connections", label: "Connections", icon: Cable },
   { path: "import", label: "Import", icon: Upload },
   { path: "grow", label: "Add features", icon: Sparkles },
   { path: "settings", label: "Settings", icon: Cog },
@@ -124,7 +126,7 @@ export function App() {
   document.title = `${heading} · ${db.settings.businessName || "My CRM"}`;
   const screens: Record<string, ReactNode> = {
     today: <Today />, people: <People query={arg} />, person: <PersonPage id={arg} />, pipeline: <Pipeline />,
-    dates: <Dates />, referrals: <Referrals />, import: <ImportPage />, grow: <Grow />, settings: <SettingsPage />, more: <More />,
+    dates: <Dates />, referrals: <Referrals />, import: <ImportPage />, connections: <Connections />, grow: <Grow />, settings: <SettingsPage />, more: <More />,
   };
 
   return (

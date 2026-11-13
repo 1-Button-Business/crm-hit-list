@@ -253,3 +253,65 @@ export function peopleToCsv(people: Person[]): string {
   const esc = (v: string) => (/[",\n]/.test(v) ? `"${v.replaceAll('"', '""')}"` : v);
   return [cols.join(","), ...people.map((p) => cols.map((c) => esc(p[c])).join(","))].join("\n");
 }
+
+export type CalEvent = { uid: string; title: string; at: string; emails: string[]; names: string[] };
+
+/** "20261105T150000Z", "20261105T150000" or "20261105" -> ISO time. "" if unreadable. */
+function icsTime(v: string): string {
+  const m = /^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?/.exec(v.trim());
+  if (!m) return "";
+  const [y, mo, d, h, mi, s] = m.slice(1, 7).map((x) => Number(x ?? 0));
+  // ponytail: times with a named time zone are read as this computer's time. Fine for "which day did we meet".
+  const date = m[7] ? new Date(Date.UTC(y!, mo! - 1, d!, h, mi, s)) : new Date(y!, mo! - 1, d!, m[4] ? h : 12, mi, s);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+}
+
+/** Read a calendar export (.ics from Google, Apple or Outlook) into events. */
+export function parseIcs(text: string): CalEvent[] {
+  const lines = text.replace(/\r\n?/g, "\n").replace(/\n[ \t]/g, "").split("\n");
+  const out: CalEvent[] = [];
+  let cur: CalEvent | null = null;
+  for (const line of lines) {
+    if (line === "BEGIN:VEVENT") { cur = { uid: "", title: "", at: "", emails: [], names: [] }; continue; }
+    if (!cur) continue;
+    if (line === "END:VEVENT") { if (cur.at) out.push(cur); cur = null; continue; }
+    const i = line.indexOf(":");
+    if (i < 0) continue;
+    const [name = "", ...params] = line.slice(0, i).split(";");
+    const value = line.slice(i + 1);
+    switch (name.toUpperCase()) {
+      case "UID": cur.uid = value; break;
+      case "SUMMARY": cur.title = value.replace(/\\n/gi, " ").replace(/\\(.)/g, "$1").trim(); break;
+      case "DTSTART": cur.at = icsTime(value); break;
+      case "ATTENDEE": case "ORGANIZER": {
+        const mail = /mailto:(.+)$/i.exec(value)?.[1]?.trim().toLowerCase();
+        if (mail) cur.emails.push(mail);
+        const cn = params.find((p) => /^CN=/i.test(p))?.slice(3).replace(/^"|"$/g, "");
+        if (cn) cur.names.push(cn);
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * Pair past calendar events with people in the CRM: first by a guest's email,
+ * then by the person's full name showing up in the title or guest list.
+ * Meetings that have not happened yet are left out.
+ */
+export function matchEvents(events: CalEvent[], people: Person[], now: Date): { event: CalEvent; person: Person }[] {
+  const byEmail = new Map(people.filter((p) => p.email).map((p) => [p.email.toLowerCase(), p]));
+  const nowIso = now.toISOString();
+  const out: { event: CalEvent; person: Person }[] = [];
+  for (const event of events) {
+    if (event.at > nowIso) continue;
+    const hits = new Set<Person>();
+    for (const mail of event.emails) { const p = byEmail.get(mail); if (p) hits.add(p); }
+    if (hits.size === 0) {
+      const hay = [event.title, ...event.names].join(" ").toLowerCase();
+      for (const p of people) { const n = p.name.trim().toLowerCase(); if (n.includes(" ") && hay.includes(n)) hits.add(p); }
+    }
+    for (const person of hits) out.push({ event, person });
+  }
+  return out;
+}

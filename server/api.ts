@@ -60,6 +60,7 @@ export async function handleApi(store: Store, req: IncomingMessage, res: ServerR
       case "PATCH people/:id": return send(res, 200, store.updatePerson(id!, await readJson(req))), true;
       case "DELETE people/:id": return store.removePerson(id!), send(res, 200, { ok: true }), true;
       case "POST touches": return send(res, 201, store.addTouch(await readJson(req))), true;
+      case "POST conversations": return send(res, 201, store.importTouches(await readJson(req))), true;
       case "DELETE touches/:id": return store.removeTouch(id!), send(res, 200, { ok: true }), true;
       case "PATCH settings": return send(res, 200, store.updateSettings(await readJson(req))), true;
       default: return send(res, 404, { error: "Nothing lives at that address." }), true;

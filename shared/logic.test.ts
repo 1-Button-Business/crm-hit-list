@@ -116,3 +116,22 @@ test("dates typed the way people type them are tidied", () => {
 });
 
 test("addDays crosses months", () => assert.equal(addDays("2026-01-30", 3), "2026-02-02"));
+
+test("reads a calendar file and pairs meetings with people", async () => {
+  const { parseIcs, matchEvents } = await import("./logic.ts");
+  const ics = [
+    "BEGIN:VCALENDAR", "BEGIN:VEVENT", "UID:a1", "DTSTART:20261105T150000Z", "SUMMARY:Intro call\\, round 2",
+    "ATTENDEE;CN=Jane Doe;ROLE=REQ-PARTICIPANT:mailto:Jane@Example.com", "END:VEVENT",
+    "BEGIN:VEVENT", "UID:a2", "DTSTART;VALUE=DATE:20261101", "SUMMARY:Coffee with Sam", "  Lee", "END:VEVENT",
+    "BEGIN:VEVENT", "UID:a3", "DTSTART:20991105T150000Z", "SUMMARY:Future with Sam Lee", "END:VEVENT",
+    "BEGIN:VEVENT", "UID:a4", "DTSTART:20261102T150000Z", "SUMMARY:Dentist", "END:VEVENT", "END:VCALENDAR",
+  ].join("\r\n");
+  const events = parseIcs(ics);
+  assert.equal(events.length, 4);
+  assert.equal(events[0]!.title, "Intro call, round 2");
+  assert.equal(events[0]!.at, "2026-11-05T15:00:00.000Z");
+  assert.equal(events[1]!.title, "Coffee with Sam Lee");
+  const person = (name: string, email = "") => ({ ...emptyPerson(), id: name, name, email, createdAt: "2026-01-01T00:00:00.000Z" });
+  const pairs = matchEvents(events, [person("Jane Doe", "jane@example.com"), person("Sam Lee")], new Date("2026-11-13T00:00:00Z"));
+  assert.deepEqual(pairs.map((p) => `${p.event.uid}:${p.person.name}`), ["a1:Jane Doe", "a2:Sam Lee"]);
+});

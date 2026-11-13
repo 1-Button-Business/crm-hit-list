@@ -18,9 +18,12 @@ function seed(): Db {
   by("Derrick").referredById = by("Maya").id;
   by("Tom").referredById = by("Maya").id;
   by("Maya").tags = ["VIP", "Referrer"];
-  const t = (name: string, kind: Touch["kind"], body: string, days: number): Touch => ({ id: id(), personId: by(name).id, kind, body, at: ago(days) });
+  const t = (name: string, kind: Touch["kind"], body: string, days: number, source?: string): Touch => ({ id: id(), personId: by(name).id, kind, body, at: ago(days), ...(source ? { source } : {}) });
   const touches = [
     t("Maya", "call", "Great catch-up. Asked how the kids are doing.", 9),
+    t("Maya", "meeting", "Coffee at Fox in the Snow", 16, "calendar"),
+    t("Priya", "meeting", "Intro call. She wants to start in January and asked about a payment plan.", 3, "recorder"),
+    t("Derrick", "text", "Him: Can you send pricing? Me: On its way today.", 1, "texts"),
     t("Maya", "gift", "Coffee sampler as a thank-you", 30),
     t("Maya", "note", "Prefers texts over calls. Mornings are best.", 40),
     t("Renee", "text", "Checked in after we wrapped up.", 75),
@@ -69,6 +72,12 @@ export async function demoCall<T>(method: string, path: string, body?: unknown):
       if (typeof data.followUpOn === "string") { p.followUpOn = data.followUpOn; p.followUpNote = ""; }
       const t: Touch = { id: id(), personId: p.id, kind: data.kind as Touch["kind"], body: String(data.body ?? ""), at: new Date().toISOString() };
       db.touches.push(t); out = t; break;
+    }
+    case "POST conversations": {
+      const rows = body as Omit<Touch, "id">[];
+      const fresh = rows.filter((r) => db.people.some((p) => p.id === r.personId) && !(r.ref && db.touches.some((t) => t.ref === r.ref && t.personId === r.personId)));
+      for (const r of fresh) db.touches.push({ ...r, id: id() });
+      out = { added: fresh.length, skipped: rows.length - fresh.length }; break;
     }
     case "DELETE touches/:id": db.touches = db.touches.filter((t) => t.id !== key); break;
     case "PATCH settings": {

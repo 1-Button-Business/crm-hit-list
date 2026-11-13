@@ -1,10 +1,11 @@
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { useCrm } from "../crm.ts";
 import { accounts, askNow, builds } from "../recipes.ts";
 import type { Recipe } from "../recipes.ts";
 import { Button, Card } from "../ui.tsx";
 
-function RecipeCard({ r, featured }: { r: Recipe; featured?: boolean }) {
+export function RecipeCard({ r, featured, chip }: { r: Recipe; featured?: boolean; chip?: ReactNode }) {
   const { say } = useCrm();
   const [open, setOpen] = useState(false);
   async function copy() {
@@ -14,7 +15,7 @@ function RecipeCard({ r, featured }: { r: Recipe; featured?: boolean }) {
   return (
     <li className={`grid content-start gap-3 rounded-xl p-4 ${featured ? "goal-card border md:col-span-2" : "bg-raised"}`}>
       {featured && <p className="text-sm font-semibold text-accent">Start here</p>}
-      <h3 className="text-xl">{r.title}</h3>
+      <h3 className="flex flex-wrap items-center gap-2 text-xl">{r.title}{chip}</h3>
       <p className="text-soft">{r.get}</p>
       <p className="text-sm text-soft"><span className="font-semibold text-ink">You need:</span> {r.needs}</p>
       <details className="text-sm" open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>

@@ -70,3 +70,13 @@ If the tools are missing, the owner opened Claude in the wrong folder. Ask them 
 - Every button and box at least 48 pixels tall, with a visible label.
 - Works on a phone-width window. No sideways scrolling except the Pipeline.
 - Words the owner uses: clients, reach out, follow up, haven't talked in a while. Not: leads pipeline velocity, touchpoints cadence.
+
+## Filing conversations from connections
+
+The Connections screen (`src/screens/Connections.tsx`) sends owners to you with a message per source. When you save a conversation that came from the owner's calendar, call recorder, texts or email:
+
+- Use `crm_log` with `source` set to `calendar`, `recorder`, `texts` or `email`, and `ref` set to the outside id (event id, recording id, thread id).
+- The same `ref` for the same person is saved once, so it is safe to run a sync again.
+- Save a short summary, not a full transcript. The limit is 60,000 characters.
+- Match people by email or phone first, then by full name. Ask before adding anyone new.
+- To add a new kind of source, add it to `SOURCES` in `shared/types.ts` and add a card in `src/recipes.ts`.

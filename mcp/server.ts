@@ -79,8 +79,8 @@ server.registerTool("crm_update_person", {
 }, safe(({ id, changes }: { id: string; changes: unknown }) => brief(store.updatePerson(id, changes))));
 
 server.registerTool("crm_log", {
-  description: "Save something that happened with a person. kind 'note' is a private note. call, text, email, dm, meeting and gift count as reach-outs toward the daily goal. order records what they bought. Leave 'at' out for right now, or pass an ISO time with offset for something in the past. This only records it; it does not send anything.",
-  inputSchema: { personId: z.string().max(60), kind: z.enum(TOUCH_KINDS), body: z.string().max(10_000), at: z.string().datetime({ offset: true }).optional() },
+  description: "Save something that happened with a person. kind 'note' is a private note. call, text, email, dm, meeting and gift count as reach-outs toward the daily goal. order records what they bought. Leave 'at' out for right now, or pass an ISO time with offset for something in the past. When it came in from a connection, set source (calendar, recorder, texts or email) and ref to the outside id (event id, recording id, message thread id): a second save with the same ref for the same person is skipped, so running a sync twice never makes doubles. This only records it; it does not send anything.",
+  inputSchema: { personId: z.string().max(60), kind: z.enum(TOUCH_KINDS), body: z.string().max(60_000), at: z.string().datetime({ offset: true }).optional(), source: z.enum(["calendar", "recorder", "texts", "email"]).optional(), ref: z.string().max(300).optional() },
 }, safe((input: unknown) => store.addTouch(input)));
 
 await server.connect(new StdioServerTransport());

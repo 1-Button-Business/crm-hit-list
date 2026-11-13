@@ -28,6 +28,7 @@ Other flavors: [Client Roster](https://1-button-business.github.io/crm-client-ro
 | Stop letting people go quiet | A "Haven't talked in a while" list |
 | Remember to follow up | A follow-up date on every person, including "in 3 months" |
 | Keep notes on clients | A pinned note and a full history for each person |
+| Keep every conversation in one place | A Connections screen: calendar, call recorder, texts and email all land under the right person |
 | Text and email faster | Ready-made messages that open in your own phone and email apps |
 | Track referrals | Who sent you whom, and which thank-yous you still owe |
 | Remember birthdays | Birthdays and other dates, shown a week ahead |
