@@ -1,9 +1,11 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { config } from "../../crm.config.ts";
+import { host } from "../api.ts";
 import { useCrm } from "../crm.ts";
 import { accounts, askNow, builds } from "../recipes.ts";
 import type { Recipe } from "../recipes.ts";
-import { Button, Card } from "../ui.tsx";
+import { Button, Card, btnClass } from "../ui.tsx";
 
 export function RecipeCard({ r, featured, chip, primary }: { r: Recipe; featured?: boolean; chip?: ReactNode; primary?: boolean }) {
   const { say } = useCrm();
@@ -34,7 +36,28 @@ const Group = ({ title, intro, items, className, feature }: { title: string; int
   </Card>
 );
 
+const REPOS: Record<string, string> = { "Client Roster": "crm-client-roster", "Hit List": "crm-hit-list", "Gift Book": "crm-gift-book" };
+
+/** On the hosted site the CRM cannot be rebuilt by Claude. This is the door to your own copy. */
+function OwnCopy() {
+  const repo = `https://github.com/1-Button-Business/${REPOS[config.title] ?? "crm-client-roster"}`;
+  return (
+    <Card title="Want to change it? Run your own copy" className="rise">
+      <div className="grid gap-4">
+        <p className="text-soft">The version you are using lives on the 1BB site, so it looks and works the same for everyone. Your own copy runs on your computer. Claude can rebuild any part of it for you, and it can pull in your calendar, call recorder, texts and email.</p>
+        <ol className="grid list-decimal gap-2 pl-6 text-soft">
+          <li>Open the page below and press "Use this template".</li>
+          <li>Open Claude, choose that folder, and say: "Set up my CRM."</li>
+          <li>Come back here, open Settings, and download your list. Then tell Claude: "Import this into my CRM."</li>
+        </ol>
+        <a className={`${btnClass("primary")} justify-self-start`} href={repo} target="_blank" rel="noreferrer">Get my own copy</a>
+      </div>
+    </Card>
+  );
+}
+
 export function Grow() {
+  if (host.hosted) return <OwnCopy />;
   return (
     <>
       <Card title="Your CRM grows by asking" className="rise">

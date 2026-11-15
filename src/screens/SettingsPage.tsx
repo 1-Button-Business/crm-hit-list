@@ -1,8 +1,8 @@
 import { config } from "../../crm.config.ts";
 import type { Settings } from "../../shared/types.ts";
-import { DEMO } from "../api.ts";
+import { DEMO, host } from "../api.ts";
+import { peopleToCsv } from "../../shared/logic.ts";
 import { useCrm } from "../crm.ts";
-import { demoExportUrl } from "../demoStore.ts";
 import { Card, Field, btnClass, useSaved } from "../ui.tsx";
 
 const THEMES: { id: string; label: string; bg: string; dot: string }[] = [
@@ -58,16 +58,20 @@ export function SettingsPage() {
 
       <Card title="Your data" className="rise rise-3">
         <div className="grid gap-4">
-          <p className="text-soft">Everything is saved in one file on this computer: the <code>data</code> folder inside your CRM folder. A backup copy is made every day you use it, and the last 30 are kept.</p>
-          <a className={`${btnClass()} justify-self-start`} href={DEMO ? demoExportUrl() : "/api/export"} download="my-crm.csv">Download my {config.peopleWord.toLowerCase()} as a spreadsheet</a>
+          {host.hosted
+            ? <p className="text-soft">Your list is saved to your 1BB account. Only you can see it. You can download it or delete it any time.</p>
+            : <p className="text-soft">Everything is saved in one file on this computer: the <code>data</code> folder inside your CRM folder. A backup copy is made every day you use it, and the last 30 are kept.</p>}
+          <a className={`${btnClass()} justify-self-start`} href={DEMO || host.hosted ? URL.createObjectURL(new Blob([peopleToCsv(db.people)], { type: "text/csv" })) : "/api/export"} download="my-crm.csv">Download my {config.peopleWord.toLowerCase()} as a spreadsheet</a>
         </div>
       </Card>
+
+      {host.settingsExtra?.()}
 
       <Card title="About this CRM">
         <div className="grid gap-2 text-soft">
           <p>This is the <span className="font-semibold text-ink">{config.title}</span> starter, made for {config.madeFor.toLowerCase()}.</p>
           <p>Built by Drey Thomas for the members of 1 Button Business. It is Drey's gift to you. It is yours to keep, change and grow.</p>
-          <p>Stuck? Open Claude in this folder and say what is wrong in plain words.</p>
+          {!host.hosted && <p>Stuck? Open Claude in this folder and say what is wrong in plain words.</p>}
         </div>
       </Card>
     </>

@@ -3,6 +3,7 @@
 ## [2026-11-13]
 
 ### Changed
+- The rulebook for what may be saved moved to `shared/schemas.ts`, and the app can now run on a hosted backend, so the members-only site shows the exact same screens. Your own copy works the same as before.
 - The four Connections messages were rewritten after a test on a real calendar, recorder and inbox: they now work person by person, skip team and personal items, and show a list before saving.
 
 ### Fixed

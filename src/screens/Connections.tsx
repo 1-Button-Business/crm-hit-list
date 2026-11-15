@@ -3,9 +3,10 @@ import { isReachOut, matchEvents, parseIcs } from "../../shared/logic.ts";
 import { SOURCES } from "../../shared/types.ts";
 import type { Source, Touch, TouchKind } from "../../shared/types.ts";
 import { config } from "../../crm.config.ts";
+import { host } from "../api.ts";
 import { useCrm } from "../crm.ts";
 import { connections } from "../recipes.ts";
-import { Area, Button, Card, Chip, Empty, Field, Pick, plural, useOnce } from "../ui.tsx";
+import { Area, Button, Card, Chip, Empty, Field, Pick, btnClass, plural, useOnce } from "../ui.tsx";
 import { RecipeCard } from "./Grow.tsx";
 
 type Row = Omit<Touch, "id">;
@@ -121,12 +122,19 @@ export function Connections() {
 
   return (
     <>
+      {host.hosted ? (
+        <Card title="Bring your conversations in" className="rise">
+          <p className="text-soft">Drop in a calendar file or paste a conversation below, and it is saved under the right person. Want Claude to pull in your calendar, call recorder, texts and email for you? That works when you run your own copy. It is free and takes about 5 minutes.</p>
+          <a className={`${btnClass()} mt-4`} href="#/grow">See how to run your own copy</a>
+        </Card>
+      ) : (
       <Card title="Connect the places you talk to people" className="rise">
         <p className="mb-4 text-soft">Claude does the connecting, so there are no passwords to type here. Press "Copy message for Claude", paste it into Claude, and it files each conversation under the right person. Run the same message any time to catch up. Nothing is saved twice.</p>
         <ul className="grid gap-4 md:grid-cols-2">
           {connections.map((c) => <RecipeCard key={c.source} r={c} primary={c.source === next} chip={count(c.source) > 0 ? <Chip tone="good">{count(c.source)} saved</Chip> : <Chip>Not used yet</Chip>} />)}
         </ul>
       </Card>
+      )}
       <div className="rise rise-2 grid items-start gap-4 lg:grid-cols-[1fr_2fr]">
         <CalendarFile />
         <PasteOne />

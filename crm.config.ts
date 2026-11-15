@@ -21,3 +21,9 @@ export const config: Preset = {
 };
 
 export const restStages = config.stages.filter((s) => s.rest).map((s) => s.id);
+
+/** Only the hosted site calls this, because people pick their type after signing in. Your own copy never needs it. */
+export function setFlavor(preset: Preset) {
+  Object.assign(config, preset);
+  restStages.splice(0, restStages.length, ...preset.stages.filter((s) => s.rest).map((s) => s.id));
+}

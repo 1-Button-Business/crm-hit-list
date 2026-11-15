@@ -1,13 +1,22 @@
 // Talks to the little server on your computer and keeps the screen in sync.
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import type { Db, Person, Settings, Touch, TouchKind } from "../shared/types.ts";
-import { demoCall } from "./demoStore.ts";
 
 /** True only on the online demo. Your own CRM always talks to its server. */
 export const DEMO = import.meta.env.VITE_DEMO === "1";
 
+type Backend = <T>(method: string, path: string, body?: unknown) => Promise<T>;
+
+/**
+ * Where this CRM is running. Your own copy leaves this alone.
+ * The hosted site swaps in its own backend and a few extra buttons before the app loads.
+ */
+export const host: { hosted: boolean; backend: Backend | null; settingsExtra: (() => ReactNode) | null } = { hosted: false, backend: null, settingsExtra: null };
+
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
-  if (DEMO) return demoCall<T>(method, path, body);
+  if (host.backend) return host.backend<T>(method, path, body);
+  if (DEMO) return (await import("./demoStore.ts")).demoCall<T>(method, path, body);
   let res: Response;
   try {
     res = await fetch(`/api/${path}`, {
