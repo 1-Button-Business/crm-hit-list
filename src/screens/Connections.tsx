@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { isReachOut, matchEvents, parseIcs } from "../../shared/logic.ts";
 import { SOURCES } from "../../shared/types.ts";
 import type { Source, Touch, TouchKind } from "../../shared/types.ts";
@@ -66,6 +66,7 @@ function PasteOne() {
   const [day, setDay] = useState(today);
   const [body, setBody] = useState("");
   const [busy, once] = useOnce();
+  const box = useRef<HTMLDivElement>(null);
   const people = useMemo(() => [...db.people].sort((a, b) => a.name.localeCompare(b.name)), [db.people]);
   const ready = personId && body.trim() && /^\d{4}-\d{2}-\d{2}$/.test(day);
 
@@ -73,7 +74,11 @@ function PasteOne() {
     if (!ready) return;
     const [y, m, d] = day.split("-").map(Number);
     const at = new Date(y!, m! - 1, d!, 12).toISOString();
-    if (await save(actions.importTouches([{ personId, kind: KIND[source], body: body.trim(), at, source }]), "Saved to their history.")) setBody("");
+    if (await save(actions.importTouches([{ personId, kind: KIND[source], body: body.trim(), at, source }]), "Saved to their history.")) {
+      setBody("");
+      // The button goes grey once the box is empty, so hand focus back to the box.
+      setTimeout(() => box.current?.querySelector("textarea")?.focus(), 0);
+    }
   });
 
   return (
@@ -90,7 +95,7 @@ function PasteOne() {
           </Pick>
           <Field label="When was it?" type="date" value={day} max={today} onChange={(e) => setDay(e.target.value)} />
         </div>
-        <Area label="Paste it here" rows={6} maxLength={60000} value={body} onChange={(e) => setBody(e.target.value)} />
+        <div ref={box}><Area label="Paste it here" rows={6} maxLength={60000} value={body} onChange={(e) => setBody(e.target.value)} /></div>
         <Button onClick={file} disabled={busy || !ready} className="justify-self-start">{busy ? "Saving" : "Save to their history"}</Button>
       </div>
     </Card>
@@ -103,34 +108,43 @@ export function Connections() {
   const name = useMemo(() => new Map(db.people.map((p) => [p.id, p.name])), [db.people]);
   const all = useMemo(() => db.touches.filter(isReachOut).sort((a, b) => b.at.localeCompare(a.at)), [db.touches]);
   const count = (s: Source) => all.filter((t) => t.source === s).length;
+  const next = connections.find((c) => count(c.source) === 0)?.source;
   const words = q.trim().toLowerCase();
-  const shown = all.filter((t) => !words || `${name.get(t.personId) ?? ""} ${t.body}`.toLowerCase().includes(words));
+  const hits = all.filter((t) => !words || `${name.get(t.personId) ?? ""} ${t.body}`.toLowerCase().includes(words));
+  // The same thing with the same person several times in a row shows once, with a count.
+  const shown: { t: Touch; times: number }[] = [];
+  for (const t of hits) {
+    const last = shown[shown.length - 1];
+    if (last && last.t.personId === t.personId && last.t.kind === t.kind && last.t.body === t.body) last.times++;
+    else shown.push({ t, times: 1 });
+  }
 
   return (
     <>
       <Card title="Connect the places you talk to people" className="rise">
         <p className="mb-4 text-soft">Claude does the connecting, so there are no passwords to type here. Press "Copy message for Claude", paste it into Claude, and it files each conversation under the right person. Run the same message any time to catch up. Nothing is saved twice.</p>
         <ul className="grid gap-4 md:grid-cols-2">
-          {connections.map((c) => <RecipeCard key={c.source} r={c} chip={count(c.source) > 0 ? <Chip tone="good">{count(c.source)} saved</Chip> : <Chip>Not used yet</Chip>} />)}
+          {connections.map((c) => <RecipeCard key={c.source} r={c} primary={c.source === next} chip={count(c.source) > 0 ? <Chip tone="good">{count(c.source)} saved</Chip> : <Chip>Not used yet</Chip>} />)}
         </ul>
       </Card>
-      <div className="rise rise-2 grid items-start gap-4 lg:grid-cols-2">
+      <div className="rise rise-2 grid items-start gap-4 lg:grid-cols-[1fr_2fr]">
         <CalendarFile />
         <PasteOne />
       </div>
       <Card title={`All conversations (${all.length})`} className="rise rise-3">
         <div className="grid gap-4">
-          <Field label="Search what was said" type="search" value={q} onChange={(e) => setQ(e.target.value)} />
+          <Field label="Search what was said" type="search" placeholder="A name or a word, like pricing" value={q} onChange={(e) => setQ(e.target.value)} />
+          <p role="status" className="text-sm text-soft">{words ? `Showing ${hits.length} of ${all.length}` : `${all.length} saved`}</p>
           {shown.length === 0
             ? <Empty title={all.length ? "Nothing matches that" : "No conversations yet"}><p>{all.length ? "Try a name or a different word." : "Log a reach-out, or connect one of the places above."}</p></Empty>
             : (
               <ul className="grid">
-                {shown.slice(0, 50).map((t) => (
+                {shown.slice(0, 50).map(({ t, times }) => (
                   <li key={t.id} className="grid gap-1 border-t border-line py-3 first:border-t-0">
                     <p className="flex flex-wrap items-center gap-2">
-                      <a className="font-semibold underline" href={`#/person/${t.personId}`}>{name.get(t.personId) ?? "Someone"}</a>
-                      <Chip>{t.kind}</Chip>
-                      {t.source && t.source in SOURCES && <Chip tone="good">{SOURCES[t.source as Source]}</Chip>}
+                      <a className="inline-flex min-h-12 items-center font-semibold underline" href={`#/person/${t.personId}`}>{name.get(t.personId) ?? "Someone"}</a>
+                      {t.source && t.source in SOURCES ? <Chip tone="good">{SOURCES[t.source as Source]}</Chip> : <Chip>{t.kind}</Chip>}
+                      {times > 1 && <Chip>{times} times</Chip>}
                       <span className="text-sm text-soft">{when(t.at)}</span>
                     </p>
                     {t.body && <p className="line-clamp-2 max-w-none text-soft">{t.body}</p>}
@@ -138,7 +152,7 @@ export function Connections() {
                 ))}
               </ul>
             )}
-          {shown.length > 50 && <p className="text-sm text-soft">Showing the newest 50 of {shown.length}. Search to narrow it down.</p>}
+          {shown.length > 50 && <p className="text-sm text-soft">Showing the newest 50. Search to narrow it down.</p>}
         </div>
       </Card>
     </>

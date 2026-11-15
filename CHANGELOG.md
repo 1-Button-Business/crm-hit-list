@@ -5,6 +5,10 @@
 ### Changed
 - The four Connections messages were rewritten after a test on a real calendar, recorder and inbox: they now work person by person, skip team and personal items, and show a list before saving.
 
+### Fixed
+- Connections screen after a look and feel inspection: one main button, one tag per row, repeated rows fold into one, names are easier to tap, the search says how many matched, and focus stays in the paste box after a save.
+- The hidden tour no longer floats a button over forms. It comes back from the demo strip. Keyboard focus no longer lands under the phone tab bar.
+
 ### Added
 - Connections screen: calendar meetings, call recorder notes, text threads and emails are saved under the right person, because members asked for one place that holds every conversation. Claude does the connecting; a calendar file and a paste box work with no Claude at all.
 - Conversations remember where they came from and their outside id, so running a sync twice never saves doubles.

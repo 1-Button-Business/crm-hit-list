@@ -5,7 +5,7 @@ import { accounts, askNow, builds } from "../recipes.ts";
 import type { Recipe } from "../recipes.ts";
 import { Button, Card } from "../ui.tsx";
 
-export function RecipeCard({ r, featured, chip }: { r: Recipe; featured?: boolean; chip?: ReactNode }) {
+export function RecipeCard({ r, featured, chip, primary }: { r: Recipe; featured?: boolean; chip?: ReactNode; primary?: boolean }) {
   const { say } = useCrm();
   const [open, setOpen] = useState(false);
   async function copy() {
@@ -22,7 +22,7 @@ export function RecipeCard({ r, featured, chip }: { r: Recipe; featured?: boolea
         <summary className="min-h-12 content-center font-semibold underline">See the message</summary>
         <p className="max-w-none rounded-xl border border-line bg-surface p-3 whitespace-pre-wrap">{r.prompt}</p>
       </details>
-      <Button onClick={copy} className="justify-self-start" aria-label={`Copy message for Claude: ${r.title}`}>Copy message for Claude</Button>
+      <Button kind={primary ? "primary" : "secondary"} onClick={copy} className="justify-self-start" aria-label={`Copy message for Claude: ${r.title}`}>Copy message for Claude</Button>
     </li>
   );
 }

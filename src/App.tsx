@@ -145,7 +145,7 @@ export function App() {
               <h1 id="page-title" tabIndex={-1} className="truncate text-2xl outline-none">{heading}</h1>
             </div>
             {/* On a person's page the main action is reaching out, so this one steps back. */}
-            <Button kind={page === "person" ? "secondary" : "primary"} onClick={() => setAdding(true)}><Plus size={20} aria-hidden />Add {config.personWord}</Button>
+            <Button kind={page === "person" || page === "connections" ? "secondary" : "primary"} onClick={() => setAdding(true)}><Plus size={20} aria-hidden />Add {config.personWord}</Button>
           </header>
 
           {error && <p role="alert" className="rounded-2xl border border-warn bg-surface p-4 font-semibold text-warn">{error} You are looking at the last version that loaded.</p>}

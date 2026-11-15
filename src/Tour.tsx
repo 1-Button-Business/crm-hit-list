@@ -30,9 +30,13 @@ export function Tour() {
   const last = step === STEPS.length - 1;
   const move = (n: number) => { const next = Math.min(Math.max(n, 0), STEPS.length - 1); setStep(next); go(STEPS[next]!.path); };
 
-  if (!open) {
-    return <Button kind="primary" onClick={() => setOpen(true)} className="fixed right-4 bottom-24 z-30 shadow-lg lg:bottom-4">Show the tour</Button>;
-  }
+  useEffect(() => {
+    const show = () => setOpen(true);
+    window.addEventListener("tour-open", show);
+    return () => window.removeEventListener("tour-open", show);
+  }, []);
+  // Hidden means hidden. The demo strip at the top has the link to bring it back.
+  if (!open) return null;
   return (
     <aside aria-label="Guided tour" className="goal-card fixed inset-x-3 bottom-24 z-30 grid gap-2 rounded-2xl border bg-surface p-3 shadow-lg sm:left-auto sm:w-96 sm:gap-3 sm:p-4 lg:right-4 lg:bottom-4">
       <p className="flex items-center justify-between gap-2 text-sm font-semibold text-accent">
@@ -57,7 +61,8 @@ export function DemoBanner() {
   return (
     <p className="max-w-none rounded-2xl border border-line bg-raised px-4 py-3 text-sm">
       <span className="font-semibold">You are looking at a demo.</span> The people are made up and anything you change stays in this browser.{" "}
-      <a className="font-semibold underline" href="tour.mp4" target="_blank" rel="noreferrer">Watch the 90-second video</a>{" "}or{" "}
+      <a className="font-semibold underline" href="tour.mp4" target="_blank" rel="noreferrer">Watch the 90-second video</a>{" "},{" "}
+      <button className="font-semibold underline" onClick={() => window.dispatchEvent(new Event("tour-open"))}>show the tour</button>{" "}or{" "}
       <a className="font-semibold underline" href={REPO} target="_blank" rel="noreferrer">get your own copy</a>.
     </p>
   );

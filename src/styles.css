@@ -117,3 +117,6 @@
   box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 30%, transparent) inset, 0 12px 32px -16px rgb(0 0 0 / 0.45);
   border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
 }
+
+/* Keyboard focus and jump links stop above the phone tab bar instead of under it. */
+html { scroll-padding-bottom: 6rem; }
