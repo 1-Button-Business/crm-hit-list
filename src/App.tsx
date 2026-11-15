@@ -156,7 +156,7 @@ export function App() {
           {/* Room at the bottom so the tour card never covers the last row. */}
           {DEMO && <div aria-hidden className="h-96" />}
           <footer className="px-2 py-4 text-sm text-soft">
-            Built by Drey Thomas. Drey's gift to you, from <a className="underline" href="https://1buttonbusiness.com" target="_blank" rel="noreferrer">1 Button Business</a>.
+            Built by Drey Thomas. Drey's gift to you, from <a className="inline-flex min-h-12 items-center underline" href="https://1buttonbusiness.com" target="_blank" rel="noreferrer">1 Button Business</a>.
           </footer>
         </div>
       </div>

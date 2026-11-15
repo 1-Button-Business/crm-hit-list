@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Flame } from "lucide-react";
 import { config, restStages } from "../../crm.config.ts";
 import { dueFollowUps, quietPeople, reachOutsOn, streak, upcomingDates } from "../../shared/logic.ts";
+import { host } from "../api.ts";
 import { useCrm } from "../crm.ts";
 import { PersonRow } from "../PersonRow.tsx";
 import { samplePeople } from "../sample.ts";
@@ -35,7 +36,7 @@ function Welcome() {
   return (
     <Card title="Welcome. Let's set up your CRM." className="rise">
       <div className="grid gap-6">
-        <p className="text-soft">This is your {config.title}. It lives on your computer, and nobody else can see it. Start with two quick answers.</p>
+        <p className="text-soft">This is your {config.title}. {host.hosted ? "It is saved to your 1BB account, and nobody else can see it." : "It lives on your computer, and nobody else can see it."} Start with two quick answers.</p>
         <div className="grid items-start gap-4 sm:grid-cols-2">
           <Field label="Your business name" value={biz} onChange={(e) => setBiz(e.target.value)} onBlur={() => biz !== db.settings.businessName && void save(actions.updateSettings({ businessName: biz }), "Saved")} />
           <Field label="Your first name" hint="Used to sign your messages." value={me} onChange={(e) => setMe(e.target.value)} onBlur={() => me !== db.settings.yourName && void save(actions.updateSettings({ yourName: me }), "Saved")} />
