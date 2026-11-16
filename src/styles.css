@@ -61,6 +61,12 @@
   --ink: #f7efe9; --soft: #c6b6aa; --accent: #fb923c; --on-accent: #2a1203;
   --good: #4ade80; --warn: #fbbf24;
 }
+[data-theme="onebb"] {
+  color-scheme: dark;
+  --bg: #0a0a0f; --surface: #141419; --raised: #1e1e24; --line: #34343e;
+  --ink: #e8e6e3; --soft: #a3a3ae; --accent: #d4a017; --on-accent: #0a0a0f;
+  --good: #4ade80; --warn: #fbbf24;
+}
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;

@@ -13,6 +13,7 @@ const THEMES: { id: string; label: string; bg: string; dot: string }[] = [
   { id: "midnight", label: "Midnight", bg: "#131c2e", dot: "#5eead4" },
   { id: "forest", label: "Forest", bg: "#14201b", dot: "#86efac" },
   { id: "ember", label: "Ember", bg: "#201917", dot: "#fb923c" },
+  { id: "onebb", label: "1BB", bg: "#141419", dot: "#d4a017" },
 ];
 
 function Setting({ k, label, hint, type = "text" }: { k: keyof Settings; label: string; hint?: string; type?: "text" | "number" }) {

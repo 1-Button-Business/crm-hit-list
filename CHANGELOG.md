@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-11-16]
+
+### Added
+- A "1BB" theme in Settings: near-black with one gold accent, to match 1 Button Business.
+
 ## [2026-11-13]
 
 ### Changed
