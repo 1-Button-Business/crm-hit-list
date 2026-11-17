@@ -4,6 +4,7 @@
 
 ### Changed
 - The online demo opens in the 1BB theme. Your own copy still starts on "Match my device".
+- Demo visitors from before start fresh so they see the new theme. The tour's Next button is no longer gold, so each screen keeps one gold button.
 
 ## [2026-11-16]
 

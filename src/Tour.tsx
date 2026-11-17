@@ -49,7 +49,7 @@ export function Tour() {
         {step > 0 && <Button onClick={() => move(step - 1)}>Back</Button>}
         {last
           ? <a className="inline-flex min-h-12 items-center rounded-xl bg-accent px-4 font-semibold text-on-accent" href={REPO} target="_blank" rel="noreferrer">Get your own copy</a>
-          : <Button kind="primary" onClick={() => move(step + 1)}>Next</Button>}
+          : <Button onClick={() => move(step + 1)}>Next</Button>}
         {last && <Button onClick={() => { resetDemo(); sessionStorage.clear(); location.hash = "/today"; location.reload(); }}>Start over</Button>}
       </div>
     </aside>

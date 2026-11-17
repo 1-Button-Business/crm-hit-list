@@ -7,7 +7,7 @@ import { emptyPerson } from "../shared/types.ts";
 import type { Db, Person, Touch } from "../shared/types.ts";
 import { samplePeople } from "./sample.ts";
 
-const KEY = `crm-demo-${config.title}`;
+const KEY = `crm-demo-v2-${config.title}`; // v2: demo opens in the 1BB theme, so old saved demos start fresh
 const id = () => crypto.randomUUID();
 const ago = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
 
