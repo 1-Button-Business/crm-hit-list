@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-11-17]
+
+### Changed
+- The online demo opens in the 1BB theme. Your own copy still starts on "Match my device".
+
 ## [2026-11-16]
 
 ### Added

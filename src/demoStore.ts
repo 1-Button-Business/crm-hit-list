@@ -31,7 +31,7 @@ function seed(): Db {
     t("Priya", "email", "Sent call times", 0),
     t("Derrick", "text", "Sent pricing", 0),
   ];
-  return { people, touches, settings: { businessName: "Bright Path Co.", yourName: "Sam", theme: "", ...config.defaults } };
+  return { people, touches, settings: { businessName: "Bright Path Co.", yourName: "Sam", theme: "onebb", ...config.defaults } };
 }
 
 function load(): Db {
