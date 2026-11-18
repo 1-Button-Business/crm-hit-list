@@ -36,7 +36,7 @@ function Welcome() {
   return (
     <Card title="Welcome. Let's set up your CRM." className="rise">
       <div className="grid gap-6">
-        <p className="text-soft">This is your {config.title}. {host.hosted ? "It is saved to your 1BB account, and nobody else can see it." : "It lives on your computer, and nobody else can see it."} Start with two quick answers.</p>
+        <p className="text-soft">This is your {config.title}. {host.ownSite ? "It is saved on your own site. Only you can sign in to see it." : host.hosted ? "It is saved to your 1BB account. Only you and the 1BB team can see it." : "It lives on your computer, and nobody else can see it."} Start with two quick answers.</p>
         <div className="grid items-start gap-4 sm:grid-cols-2">
           <Field label="Your business name" value={biz} onChange={(e) => setBiz(e.target.value)} onBlur={() => biz !== db.settings.businessName && void save(actions.updateSettings({ businessName: biz }), "Saved")} />
           <Field label="Your first name" hint="Used to sign your messages." value={me} onChange={(e) => setMe(e.target.value)} onBlur={() => me !== db.settings.yourName && void save(actions.updateSettings({ yourName: me }), "Saved")} />
@@ -48,6 +48,7 @@ function Welcome() {
             <Button onClick={() => go("/import")}>Import a list</Button>
             <Button onClick={loadSample} disabled={busy}>{busy ? "Adding" : "Load sample people"}</Button>
           </div>
+          {host.hosted && <p className="text-soft">Or let Claude do it for you: open <a className="font-semibold underline" href="#/settings">Settings</a> and connect Claude. It brings in your people from another CRM, your texts and your email.</p>}
         </div>
       </div>
     </Card>
@@ -57,7 +58,7 @@ function Welcome() {
 export function Today() {
   const { db, today } = useCrm();
   const { people, touches, settings } = db;
-  if (people.length === 0) return <Welcome />;
+  if (people.length === 0) return <><Welcome />{host.todayExtra?.()}</>;
 
   const done = reachOutsOn(touches, today);
   const run = streak(touches, settings.dailyGoal, today);
@@ -80,6 +81,8 @@ export function Today() {
           </div>
         </div>
       </Card>
+
+      {host.todayExtra?.()}
 
       <Card title="Follow up today" className="rise rise-2" action={due.length > 0 && <Chip tone="warn">{due.length} due</Chip>}>
         {due.length === 0

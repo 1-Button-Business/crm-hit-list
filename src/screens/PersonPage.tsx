@@ -122,7 +122,7 @@ export function PersonPage({ id }: { id: string }) {
               {db.people.filter((p) => p.id !== id).sort((a, b) => a.name.localeCompare(b.name)).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </Pick>
             {sentBy && <a className="font-semibold underline" href={`#/person/${sentBy.id}`}>Open {sentBy.name}</a>}
-            {config.fields.map((f) => <Extra key={f.id} person={person} id={f.id} label={f.label} type={f.type} placeholder={f.placeholder} />)}
+            {[...config.fields, ...(db.settings.customFields ?? []).filter((c) => !config.fields.some((f) => f.id === c.id))].map((f) => <Extra key={f.id} person={person} id={f.id} label={f.label} type={f.type} placeholder={f.placeholder} />)}
           </div>
         </Card>
 

@@ -59,8 +59,10 @@ export function SettingsPage() {
 
       <Card title="Your data" className="rise rise-3">
         <div className="grid gap-4">
-          {host.hosted
-            ? <p className="text-soft">Your list is saved to your 1BB account. Only you can see it. You can download it or delete it any time.</p>
+          {host.ownSite
+            ? <p className="text-soft">Your list is saved in your own database, on your own site. Only you can sign in to see it. Download a copy now and then to keep a backup.</p>
+            : host.hosted
+            ? <p className="text-soft">Your list is saved to your 1BB account. Only you and the 1BB team (Drey and Kevin) can see it. You can download it or delete it any time.</p>
             : <p className="text-soft">Everything is saved in one file on this computer: the <code>data</code> folder inside your CRM folder. A backup copy is made every day you use it, and the last 30 are kept.</p>}
           <a className={`${btnClass()} justify-self-start`} href={DEMO || host.hosted ? URL.createObjectURL(new Blob([peopleToCsv(db.people)], { type: "text/csv" })) : "/api/export"} download="my-crm.csv">Download my {config.peopleWord.toLowerCase()} as a spreadsheet</a>
         </div>

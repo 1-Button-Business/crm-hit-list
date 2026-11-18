@@ -1,0 +1,37 @@
+{
+  "name": "crm-hit-list-online",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "The members-only site for the 1BB CRM: sign in, pick a CRM type, use it hosted or get your own copy.",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p convex",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@auth/core": "0.41.3",
+    "@convex-dev/auth": "0.0.96",
+    "@tailwindcss/vite": "4.3.3",
+    "@vitejs/plugin-react": "6.1.2",
+    "convex": "1.49.0",
+    "lucide-react": "1.62.0",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
+    "tailwindcss": "4.3.3",
+    "vite": "8.3.5",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "5.0.0",
+    "@types/node": "24.19.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "convex-test": "0.0.66",
+    "typescript": "6.0.3",
+    "vitest": "4.1.12"
+  }
+}

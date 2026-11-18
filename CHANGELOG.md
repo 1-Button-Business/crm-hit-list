@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-11-18]
+
+### Added
+- `online/`: put your CRM on your own web address, with a login only you have. Claude follows `recipes/put-it-online.md` (rewritten and tested end to end).
+
 ## [2026-11-17]
 
 ### Changed

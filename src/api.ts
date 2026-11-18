@@ -12,7 +12,8 @@ type Backend = <T>(method: string, path: string, body?: unknown) => Promise<T>;
  * Where this CRM is running. Your own copy leaves this alone.
  * The hosted site swaps in its own backend and a few extra buttons before the app loads.
  */
-export const host: { hosted: boolean; backend: Backend | null; settingsExtra: (() => ReactNode) | null } = { hosted: false, backend: null, settingsExtra: null };
+/** ownSite: the hosted screens, but on the member's own web address with their own database (hub OWNER_EMAIL mode). */
+export const host: { hosted: boolean; ownSite: boolean; backend: Backend | null; settingsExtra: (() => ReactNode) | null; todayExtra: (() => ReactNode) | null } = { hosted: false, ownSite: false, backend: null, settingsExtra: null, todayExtra: null };
 
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   if (host.backend) return host.backend<T>(method, path, body);

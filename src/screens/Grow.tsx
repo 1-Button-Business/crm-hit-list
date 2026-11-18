@@ -57,7 +57,7 @@ function OwnCopy() {
 }
 
 export function Grow() {
-  if (host.hosted) return <OwnCopy />;
+  if (host.hosted && !host.ownSite) return <OwnCopy />;
   return (
     <>
       <Card title="Your CRM grows by asking" className="rise">

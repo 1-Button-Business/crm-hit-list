@@ -59,6 +59,8 @@ export type Settings = {
   /** Reach-outs you want to make each day. */
   dailyGoal: number;
   theme: string;
+  /** Extra boxes a member added to every person (hosted site, usually through Claude). */
+  customFields?: { id: string; label: string; type?: string; placeholder?: string }[];
 };
 
 export type Db = { people: Person[]; touches: Touch[]; settings: Settings };

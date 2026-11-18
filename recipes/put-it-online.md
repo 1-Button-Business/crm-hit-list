@@ -1,87 +1,85 @@
-# Use it on my phone (put the CRM online)
+# Put my CRM online (my own web address)
 
-**What the owner gets:** Their CRM at a web address, behind a password only they have, so it works from their phone anywhere.
+**What the owner gets:** Their CRM at their own web address, like `https://crm.theirbusiness.com`. Only they can sign in, from any phone or computer. Their list lives in their own database, not with 1BB.
 
-**Needs:** A Convex account (holds the data and the login) and a Cloudflare account (serves the screen). Both have free plans to start. Check current limits on their sites. Allow 2 to 3 hours with the owner present.
+**How:** The `online/` folder in this repo is the same site 1BB runs at crm.1buttonbusiness.com, set up for one owner. Nothing needs to be built. You set it up, test it, and move their list in.
 
-**Status:** A written plan. Not pre-built. Build it fresh in this copy and test it with the owner.
+**Needs:** A Convex account (holds the data and the login) and a Cloudflare account (serves the screens). Both have free plans to start. Check current limits on their sites. A domain they own, if they want their own address. Allow about 45 minutes with the owner present.
 
 ## Before you start
 
-- Say this to the owner first: "Right now your client list can only be opened on this computer. After this, it can be reached from the internet, so the login comes first and I will test it before your real clients go in."
-- If this folder is a git repo, commit and tag: `git add -A && git commit -m "Last local-only version" && git tag local-only`. If it is not a repo, run `git init` first. The `.gitignore` keeps `data/` and `.env` files out.
-- Copy `data/crm.json` to `data/backups/before-going-online-YYYY-MM-DD.json` and ask the owner to also copy that file somewhere off this computer.
-- Read the current official docs for Convex (schemas, functions, auth in functions, data import, HTTP actions, deploying, environment variables), Convex Auth (password sign-in, setup, how to limit who can sign up) and Cloudflare Pages (deploying a Vite site). Do not write this from memory. These APIs change.
-- Ask before installing each package. Check that it is the official one and pin an exact version.
+- Say this to the owner first: "Right now your client list can only be opened on this computer. After this, it can be reached from the internet behind a login only you have. I will test the login before any of your real clients go in."
+- Commit and tag the local version: `git add -A && git commit -m "Last local-only version" && git tag local-only`. Run `git init` first if this is not a repo. The `.gitignore` keeps `data/` and `.env` files out.
+- Copy `data/crm.json` to `data/backups/before-going-online-YYYY-MM-DD.json` and ask the owner to also keep a copy off this computer.
 
 ## Steps
 
-### Phase 1. Accounts and project
-1. Stop and ask the owner to create the Convex account themselves. Wait. Then create the Convex project by following the current docs. It adds a `convex/` folder. Commit that folder. Never commit deploy keys.
-2. Explain the two copies Convex gives you in one line: a practice copy (dev) and the real one (production). Build and test on practice first.
+### 1. Accounts (the owner does these)
+1. Stop and ask the owner to make a Convex account at convex.dev and a Cloudflare account at cloudflare.com. Wait for both. Never type their signup details.
+2. Run `npm ci` in the repo root first (the online site reuses the CRM's shared rules from there), then `cd online && npm ci`. Then `npx convex login` and `npx wrangler login`. The owner approves each in their browser.
 
-### Phase 2. Login first, with no client data online yet
-3. Add Convex Auth with password sign-in by following its current setup guide.
-4. Lock sign-up after the first account. In the place the docs give for running code when an account is created, refuse if any user already exists. Also keep a single-owner check in every function (step 7), so even a stray account sees nothing.
-5. Build the sign-in screen from `Field`, `Button` and `Card` in `src/ui.tsx`. In `src/App.tsx`, show nothing but sign-in until the user is signed in. Add "Sign out" to `src/screens/SettingsPage.tsx`.
-6. The owner creates their own account and types their own password. You never see it. Then try to create a second account and confirm it is refused.
+### 2. The database and the login (no client data yet)
+3. `cd online && npx convex deploy --yes --cmd 'npm run build' --cmd-url-env-var-name VITE_CONVEX_URL`. The first run asks to create a project: call it `my-crm`. It prints the Convex address. Write down the `.convex.site` version of it.
+4. Put that `.convex.site` address in `online/wrangler.jsonc` under `vars.CONVEX_SITE`. Rename `"name"` if the owner wants.
+5. `npx wrangler deploy`. It prints the site address, ending in `.workers.dev`. If they want their own domain, do step 6 first and use that address here instead.
+6. Optional, their own domain: the domain must be added to their Cloudflare account (Cloudflare walks them through changing the nameservers where they bought it; this can take a few hours). Then add to `wrangler.jsonc`: `"routes": [{ "pattern": "crm.theirbusiness.com", "custom_domain": true }]` and run `npx wrangler deploy` again. Cloudflare makes the address and its HTTPS certificate on its own.
+7. `node setup.mjs owner@theirbusiness.com https://their-site-address`. Use the exact address from step 5 or 6, no slash at the end. It sets the sign-in keys and prints a setup code. Only that email can ever sign in.
+8. The owner opens the address, presses "First time here? Make your login", and types their email, a new password and the setup code. You never see the password.
 
-### Phase 3. Data shape and rules
-7. Port `shared/types.ts` to `convex/schema.ts`: tables for people, touches and settings. Every row has an `ownerId`, with an index on it. In every query and mutation, the first lines get the signed-in user from the auth helper in the docs, stop if there is none, and read and write only rows where `ownerId` is that user. Never take an owner id from the browser.
-8. Port each method of `Store` in `server/store.ts` to a Convex function: `addPerson`, `importPeople`, `updatePerson`, `removePerson`, `addTouch`, `removeTouch`, `updateSettings`, and one query that returns the same `Db` shape as `Store.read()`.
-9. Keep every check from `personInput`, `touchInput` and `settingsInput`: the length limits, date formats, the stage fallback to `config.firstStage`, and the `referredById` cleanup. Convex validators check types. Check lengths and formats in the function body, or reuse the zod schemas if the docs say zod runs there.
-10. `shared/logic.ts` stays as it is. It is pure and keeps running in the browser.
-11. Write tests for the access rules using the test approach in the current Convex docs: signed-out calls fail, and user B cannot read or change user A's rows.
+### 3. Prove the lock works (before any real data)
+Run every check below. Do not move data until all pass.
+- Signed out: in a private window, the site shows only the sign-in box.
+- Signed out, the database refuses: `curl -s -X POST https://<deployment>.convex.cloud/api/query -H 'content-type: application/json' -d '{"path":"crm:db","args":{},"format":"json"}'` answers `"status":"error"` with "Sign in first."
+- Second account refused: on the sign-in screen, try "Make your login" with a different email and any code. It says the CRM belongs to someone else.
+- Wrong setup code refused: try "Make your login" with the owner's email and a wrong code. Refused.
+- Wrong password refused: try signing in with the owner's email and a wrong password. Refused.
+- `npm run check` passes in `online/` (includes the one-owner rule tests in `convex/owner.test.ts`).
 
-### Phase 4. Move the data
-12. Write a one-time import script that reads `data/crm.json` and loads it for the owner's user id. Old ids will not match new ids, so keep a map from old person id to new id and use it for `referredById` and each touch's `personId`. Keep `createdAt` and each touch's `at`.
-13. Run it on practice first. Compare counts of people and touches to the file. Spot-check five people with the owner. Then run it once on production. Never run it twice.
+### 4. Move the list
+9. Signed in on the new site, the owner picks their CRM type, then goes to People and uses the import box with `data/crm.json`'s people exported as a spreadsheet (Settings, "Download my people as a spreadsheet" on the local copy). Conversations come over the same way from the import screen.
+10. Compare counts with the local copy. Spot-check five people with the owner.
 
-### Phase 5. Swap the screen over
-14. Rewrite `useDb()` in `src/api.ts` on Convex hooks, and keep what it returns the same: `{ db, error, refresh, actions }` with the same `Actions`. Then the screens in `src/screens/` do not change. Wrap the app in the Convex and auth providers in `src/main.tsx`.
-15. The spreadsheet download on `SettingsPage.tsx` points at `/api/export`, which will not exist online. Build the file in the browser with `peopleToCsv` from `shared/logic.ts`.
-16. Daily backups in `data/backups/` stop once data lives in Convex. Add a "Download a full backup" button that saves the whole `Db` as a file, and tell the owner to press it weekly. Read the Convex docs on backups for what their plan includes.
-17. Claude's tools in `mcp/server.ts` still read the local file. Decide with the owner: point them at Convex using a secret kept in `.env.local` and the method the docs give for trusted scripts, or leave them off. Do not leave them quietly reading old data. Update `CLAUDE.md` to match.
+### 5. Claude, optional
+11. Ask: "Do you want me to keep being able to read and update your CRM once it is online?" If yes: Settings, "Connect Claude", make a key, and paste the private link into Claude as a connector. The link goes through their own site. If no, skip it. Never leave the local `mcp/` tools pointing at the old file without telling them.
 
-### Phase 6. Deploy
-18. Deploy Convex to production by following the docs. Set its environment variables there, not in code.
-19. Stop and ask the owner to create the Cloudflare account. Deploy the built site (`npm run build`, output folder `dist`) to Cloudflare Pages. The Convex web address is given to the build as a `VITE_` variable. That address is public by design. Nothing secret may use a `VITE_` name.
-20. Add a `public/_headers` file with basic security headers (no framing, no content-type sniffing, HTTPS only), following the current Cloudflare Pages docs.
+### 6. Finish
+12. Update this repo's `README.md`, `CLAUDE.md` and `CHANGELOG.md`: where the data lives now, how to deploy (`online/README.md`), and that `data/crm.json` is now an old backup, not the live list.
+13. Tell the owner: Settings, "Download my people as a spreadsheet" is their backup. Do it now and then.
 
-### Phase 7. Verify from a phone
-21. On the owner's phone: open the address, sign in, add a test person, log a note, set a follow-up. See it appear on the computer. Sign out and confirm the list is gone.
-22. Run the security checklist below. Do not call it done until every line passes.
+## Tested
 
-### Phase 8. Keep the local copy
-23. Leave `data/crm.json`, `data/backups/` and the `local-only` tag in place. Update `README.md`, `CLAUDE.md` and `CHANGELOG.md` to say where the data lives now, how to deploy, which environment variables exist, and that `data/crm.json` is now an old backup, not the live list.
+Run end to end on 2026-11-18 on a throwaway Convex project and a `workers.dev` address, with a fake owner and one fake person:
+- Site and sign-in screen load; security headers present; a bad Claude link gets 401.
+- Signed out: reading the list, adding a person and the admin list are all refused.
+- A second email cannot make a login or sign in. No setup code or a wrong one is refused. A second login for the owner is refused. A wrong password is refused.
+- The owner makes a login with the code, signs in, adds a person and reads it back.
+- `owner:resetLogin` plus `--new-code`, then a new login, finds the same list.
+- Found and fixed: the root folder needs `npm ci` too (step 2).
+- Not tested live: a custom domain (needs a real domain on the account). The route in step 6 is the same one crm.1buttonbusiness.com uses.
+
+## Forgot the password
+
+```bash
+cd online
+npx convex run --prod owner:resetLogin                      # removes the password, signs out every device, keeps the list
+node setup.mjs owner@theirbusiness.com --new-code          # fresh setup code
+```
+Then they make a new login on the site with the new code. Same list.
 
 ## Security checklist
 
-- [ ] Every Convex query, mutation and action checks the signed-in user before it does anything. Open each one and look.
-- [ ] No function returns people or touches without an owner filter. There are no public list endpoints.
-- [ ] Signed out, calling each function from a private browser window returns nothing or an error. You tried each one.
-- [ ] A second account cannot be created. You tried.
-- [ ] No secret is in the repo, in `src/`, in `dist/` or in a `VITE_` variable. You searched.
-- [ ] The password is known only to the owner. Sign-in attempts are limited if the docs offer it.
-
-## Ask the owner
-
-1. "This puts your client list on the internet behind a password. Are you ready for me to start, and can you stay with me for the signups?"
-2. "Pick a long password you do not use anywhere else. Type it yourself when the screen asks."
-3. "Do you want me (Claude) to keep being able to read and update your CRM once it is online?"
-
-## Done when
-
-- [ ] The owner signed in on their phone and saw their real people, with counts that match the old file.
-- [ ] Every line of the security checklist passes.
-- [ ] `npm run check` passes, including the new access tests.
-- [ ] The local backup and the `local-only` tag still exist, and the docs say how to deploy and restore.
+- [ ] Every database call checks the signed-in user is the owner (`member()` in `convex/crm.ts`; `OWNER_EMAIL` replaces the member list). `npm run check` proves it.
+- [ ] Signed out, the database refuses (step 3 curl).
+- [ ] A second email cannot sign in or make a login. You tried.
+- [ ] A login cannot be made without the setup code. You tried.
+- [ ] `TEST_LOGIN` is not set on the live database: `npx convex env list --prod`.
+- [ ] No secret is in the repo, `dist/` or a `VITE_` variable. The setup code and keys live only in Convex settings.
+- [ ] The site sends security headers (`online/public/_headers`): `curl -sI https://their-site | grep -i x-frame`.
 
 ## Do not
 
-- Never put real client data online before the login works and the signed-out test passes.
+- Never put real client data online before every line of step 3 passes.
 - Never delete or change `data/crm.json` or `data/backups/`.
-- Never type the owner's password, card or signup details for them, and never ask for them in chat.
-- Never commit keys, `.env` files or `data/`.
+- Never type the owner's password or signup details, and never ask for them in chat. The setup code is fine to show: it only works once with their email, and only to make the first login.
+- Never commit keys or `.env` files.
 - Never open `server/main.ts` to the network as a shortcut. It has no login.
-- Do not skip a failing checklist line because "it is only one user".
