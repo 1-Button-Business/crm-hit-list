@@ -15,7 +15,8 @@ export const personFields = {
 export default defineSchema({
   ...authTables,
   /** Who may use the site. One row per member email, lower case. */
-  members: defineTable({ email: v.string() }).index("by_email", ["email"]),
+  // source "1bb": added by the daily sync (removed when they leave 1BB). No source: added by hand, never auto-removed.
+  members: defineTable({ email: v.string(), source: v.optional(v.literal("1bb")) }).index("by_email", ["email"]),
   people: defineTable({ userId: v.id("users"), ...personFields }).index("by_user", ["userId"]),
   touches: defineTable({
     userId: v.id("users"), personId: v.id("people"), kind: v.string(), body: v.string(), at: v.string(),

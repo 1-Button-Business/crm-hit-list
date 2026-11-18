@@ -55,7 +55,7 @@ Run end to end on 2026-11-18 on a throwaway Convex project and a `workers.dev` a
 - The owner makes a login with the code, signs in, adds a person and reads it back.
 - `owner:resetLogin` plus `--new-code`, then a new login, finds the same list.
 - Found and fixed: the root folder needs `npm ci` too (step 2).
-- Not tested live: a custom domain (needs a real domain on the account). The route in step 6 is the same one crm.1buttonbusiness.com uses.
+- Custom domain, tested 2026-11-18 from a fresh clone of the public template: step 6 on a subdomain of a domain already on the Cloudflare account went live with HTTPS in under a minute. Every lock check passed on that address, and the Claude link worked through it (a changed key was refused). A brand-new domain also has to finish its nameserver change first, which can take hours.
 
 ## Forgot the password
 
