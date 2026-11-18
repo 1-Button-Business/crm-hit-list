@@ -108,7 +108,10 @@ export function Dashboard() {
         <div className="grid gap-3">
           <p>Your numbers from the tools you already use, in one place. Your Claude fills these in.</p>
           <p className="text-soft">Connect Stripe, QuickBooks, HubSpot, Shopify or Square in Claude under Customize, then Connectors. Then say <b className="text-ink">"Add my Stripe numbers to my CRM dashboard."</b></p>
-          <a className="font-semibold underline justify-self-start" href="#/settings">Connect Claude</a>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <a className="inline-flex min-h-12 items-center font-semibold underline" href="#/settings">Connect Claude</a>
+            <a className="inline-flex min-h-12 items-center font-semibold underline" href="#/settings">Watch the 2-minute tour</a>
+          </div>
         </div>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

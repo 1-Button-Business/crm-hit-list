@@ -12,6 +12,7 @@ import { Account } from "./Account.tsx";
 import { Admin } from "./Admin.tsx";
 import { ConnectClaude, Dashboard } from "./Claude.tsx";
 import { makeBackend } from "./backend.ts";
+import { TourCard } from "./TourCard.tsx";
 import { convex } from "./main.tsx";
 
 type Flavor = keyof typeof presets;
@@ -283,7 +284,7 @@ function Hosted({ flavor, ownSite }: { flavor: Flavor; ownSite: boolean }) {
     delete document.documentElement.dataset.brand; // the CRM wears the member's own theme
     host.hosted = true;
     host.backend = makeBackend(convex);
-    host.settingsExtra = () => <><ConnectClaude /><Account /></>;
+    host.settingsExtra = () => <><TourCard /><ConnectClaude /><Account /></>;
     host.todayExtra = () => <Dashboard />;
   });
   return <Suspense fallback={<Wait />}><Crm /></Suspense>;
