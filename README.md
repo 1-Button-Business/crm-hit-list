@@ -111,6 +111,8 @@ Diagram source: [docs/diagrams/architecture.mmd](docs/diagrams/architecture.mmd)
 | `npm test` | Checks the rules (quiet clients, birthdays, streaks, import, safety) |
 | `npm run check` | Runs every check in one go. Run this before calling a change done. |
 
+Every push and pull request to main runs `npm run check` in CI.
+
 - Needs Node 22.18 or newer.
 - Settings you can change by hand: `crm.config.ts`.
 - Optional: `PORT=4748 npm start` to use a different port.
