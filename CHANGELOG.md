@@ -1,5 +1,10 @@
 # Changelog
 
+## [2026-11-20]
+
+### Added
+- Every push and pull request runs `npm run check` in GitHub, so typecheck, tests and the build pass before a change is called done.
+
 ## [2026-11-18]
 
 ### Added
